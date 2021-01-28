@@ -24,8 +24,8 @@ client = Client(account_sid, auth_token)
 
 
 def get_sent_messages():
-    # TODO: Make this return a collection of messages that were sent from the number
     messages = []
+    messages = client.messages.list()
     return messages
 
 
