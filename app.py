@@ -3,32 +3,45 @@ import os
 from dotenv import load_dotenv
 from flask import (
     Flask,
-    flash, 
-    render_template, 
+    flash,
+    render_template,
     redirect,
     request,
     url_for,
 )
+from twilio.rest import Client
 
 load_dotenv()
 app = Flask(__name__)
 app.secret_key = "ssssh don't tell anyone"
 
 TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
+account_sid = os.getenv('TWILIO_ACCOUNT_SID')
+auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+my_number = os.getenv('MY_PHONE_NUMBER')
+
+client = Client(account_sid, auth_token)
+
 
 def get_sent_messages():
     # TODO: Make this return a collection of messages that were sent from the number
     messages = []
     return messages
 
+
 def send_message(to, body):
-    # TODO: Send the text message
-    pass
+    client.messages.create(
+        from_=TWILIO_PHONE_NUMBER,
+        body=body,
+        to=to
+    )
+
 
 @app.route("/", methods=["GET"])
 def index():
     messages = get_sent_messages()
     return render_template("index.html", messages=messages)
+
 
 @app.route("/add-compliment", methods=["POST"])
 def add_compliment():
@@ -40,6 +53,7 @@ def add_compliment():
     send_message(to, body)
     flash('Your message was successfully sent')
     return redirect(url_for('index'))
+
 
 if __name__ == '__main__':
     app.run()
